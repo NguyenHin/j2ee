@@ -1,0 +1,65 @@
+package com.example.bai3.controller;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.bai3.model.Book;
+import com.example.bai3.service.BookService;
+
+
+@RestController
+@RequestMapping("/api/books")
+public class BookController {
+
+    @Autowired
+    private BookService bookService;
+
+    // 1. lấy ds
+    @GetMapping
+    public List<Book> getAllBooks() {
+        return bookService.getAllBooks();
+    }
+
+    // 2. lấy ds theo id
+    @GetMapping("/{id}")
+    public Book getBookById(@PathVariable int id) {
+        return bookService.getBookById(id);
+    }
+
+    // 3. thêm ds
+    @PostMapping
+    public String addBook(@RequestBody Book book) {
+        bookService.addBook(book);
+        return "Book added successfully";
+    }
+
+    // 4.cập nhật
+    @PutMapping("/{id}")
+    public String updateBook(@PathVariable int id,@RequestBody Book updatedBook) {
+        bookService.updateBook(id, updatedBook);
+        return "Book updated successfully";
+    }
+
+    // xoá
+    @DeleteMapping("/{id}")
+    public String deleteBook(@PathVariable int id) {
+        bookService.deleteBook(id);
+        return "Book deleted successfully";
+    }
+
+    @GetMapping("/books")
+    public List<Book> getsBooks() {
+        return Arrays.asList(new Book(2025, "Hi", "me"));
+    }
+    
+}
