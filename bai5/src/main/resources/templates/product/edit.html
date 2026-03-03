@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<div layout:fragment="content" class="container">
+
+    <h2>Edit Product</h2>
+
+    <form th:action="@{/products/save}"
+          th:object="${product}"
+          method="post"
+          enctype="multipart/form-data">
+
+        <!-- BẮT BUỘC để update -->
+        <input type="hidden" th:field="*{id}">
+
+        <!-- Name -->
+        <div class="mb-3">
+            <label class="form-label">Name:</label>
+            <input type="text"
+                   class="form-control"
+                   th:field="*{name}">
+        </div>
+
+        <!-- Price -->
+        <div class="mb-3">
+            <label class="form-label">Price:</label>
+            <input type="number"
+                   class="form-control"
+                   th:field="*{price}">
+        </div>
+
+        <!-- Hiển thị ảnh cũ -->
+        <div class="mb-3" th:if="${product.image != null}">
+            <label class="form-label">Current Image:</label><br>
+            <img th:src="@{'/images/' + ${product.image}}"
+                 width="150">
+        </div>
+
+        <!-- Upload ảnh mới -->
+        <div class="mb-3">
+            <label class="form-label">Change Image:</label>
+            <input type="file"
+                   name="imageProduct"
+                   class="form-control"
+                   accept="image/png, image/jpeg">
+        </div>
+
+        <!-- Category -->
+        <div class="mb-3">
+            <label class="form-label">Category:</label>
+            <select class="form-control"
+                    th:field="*{category}">
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}">
+                </option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            Update Product
+        </button>
+
+        <a th:href="@{/products}" class="btn btn-secondary">
+            Back
+        </a>
+
+    </form>
+
+</div>
+</html>
