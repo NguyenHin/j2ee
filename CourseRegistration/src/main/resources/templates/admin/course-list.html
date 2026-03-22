@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Course List</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f1f5f9;
+            margin: 0;
+        }
+
+        .header {
+            background: #007bff;
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            width: 85%;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            padding: 7px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            padding: 7px 12px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-add { background: #28a745; }
+        .btn-edit { background: #17a2b8; }
+        .btn-delete { background: #dc3545; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .pagination {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .pagination a {
+            margin: 0 3px;
+            padding: 6px 10px;
+            background: #ddd;
+            border-radius: 5px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .pagination a.active {
+            background: #007bff;
+            color: white;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 6px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">📚 Course Management</div>
+
+<div class="container">
+    <div class="card">
+
+        <!-- TOAST -->
+        <div id="toast" class="toast" th:if="${message}" th:text="${message}"></div>
+
+        <div class="top-bar">
+            <form method="get" class="search-box">
+                <input type="text" name="keyword" placeholder="Search..."
+                       th:value="${keyword}">
+                <button type="submit">🔍</button>
+            </form>
+
+            <a href="/admin/courses/create" class="btn btn-add">➕ Add</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Image</th>
+                    <th>Credits</th>
+                    <th>Lecturer</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr th:each="c : ${coursePage.content}">
+                    <td th:text="${c.name}"></td>
+                    <td>
+    <img th:if="${c.image != null}" 
+         th:src="@{'/images/' + ${c.image}}" 
+         width="80" height="60" 
+         style="object-fit: cover; border-radius: 5px;" />
+
+    <span th:if="${c.image == null}">No Image</span>
+</td>
+                    <td th:text="${c.credits}"></td>
+                    <td th:text="${c.lecturer}"></td>
+                    <td>
+                        <a th:href="@{'/admin/courses/edit/' + ${c.id}}" class="btn btn-edit">Edit</a>
+                        <a th:href="@{'/admin/courses/delete/' + ${c.id}}"
+                           class="btn btn-delete"
+                           onclick="return confirm('Delete this course?')">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- PAGINATION -->
+        <div class="pagination">
+            <a th:if="${coursePage.hasPrevious()}"
+               th:href="@{/admin/courses(page=${coursePage.number - 1}, keyword=${keyword})}">
+               «
+            </a>
+
+            <a th:each="i : ${#numbers.sequence(0, coursePage.totalPages - 1)}"
+               th:href="@{/admin/courses(page=${i}, keyword=${keyword})}"
+               th:text="${i + 1}"
+               th:classappend="${i == coursePage.number} ? 'active'">
+            </a>
+
+            <a th:if="${coursePage.hasNext()}"
+               th:href="@{/admin/courses(page=${coursePage.number + 1}, keyword=${keyword})}">
+               »
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Toast auto show
+    const toast = document.getElementById("toast");
+    if (toast) {
+        toast.style.display = "block";
+        setTimeout(() => toast.style.display = "none", 3000);
+    }
+</script>
+
+</body>
+</html>

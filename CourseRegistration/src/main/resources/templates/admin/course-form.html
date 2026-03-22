@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Course Form</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 40%;
+            margin: auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .preview img {
+            max-width: 120px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 15px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background-color: #28a745;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            text-decoration: none;
+            color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Course Form</h2>
+
+    <!-- 🔥 QUAN TRỌNG: enctype -->
+    <form th:action="@{/admin/courses/save}" 
+          th:object="${course}" 
+          method="post"
+          enctype="multipart/form-data">
+
+        <input type="hidden" th:field="*{id}" />
+
+        <!-- giữ ảnh cũ khi edit -->
+        <input type="hidden" th:field="*{image}" />
+
+        <div class="form-group">
+            <label>Name:</label>
+            <input type="text" th:field="*{name}" placeholder="Enter course name" />
+        </div>
+
+        <div class="form-group">
+            <label>Credits:</label>
+            <input type="number" th:field="*{credits}" placeholder="Enter credits" />
+        </div>
+
+        <div class="form-group">
+            <label>Lecturer:</label>
+            <input type="text" th:field="*{lecturer}" placeholder="Enter lecturer name" />
+        </div>
+
+        <!-- 🔥 UPLOAD FILE -->
+        <div class="form-group">
+            <label>Image:</label>
+            <input type="file" name="imageFile" onchange="previewImage(event)" />
+        </div>
+
+        <!-- 🔥 PREVIEW -->
+        <div class="preview">
+            <!-- ảnh cũ -->
+            <img th:if="${course.image != null}" 
+                 th:src="@{'/uploads/' + ${course.image}}" 
+                 id="oldImage"/>
+
+            <!-- ảnh mới -->
+            <img id="preview" style="display:none;" />
+        </div>
+
+        <button type="submit" class="btn btn-save">Save</button>
+    </form>
+
+    <a href="/admin/courses" class="back-link">← Back to list</a>
+</div>
+
+<script>
+    function previewImage(event) {
+        const preview = document.getElementById("preview");
+        const oldImage = document.getElementById("oldImage");
+
+        preview.src = URL.createObjectURL(event.target.files[0]);
+        preview.style.display = "block";
+
+        if (oldImage) {
+            oldImage.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>
