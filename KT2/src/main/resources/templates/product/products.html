@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<body>
+
+<div layout:fragment="content">
+
+    <h3 class="mb-3">Danh sách sản phẩm</h3>
+
+    <!-- FILTER + SORT -->
+    <div class="row mb-3">
+
+        <div class="col-md-4">
+            <form th:action="@{/products}" method="get">
+
+                <select name="categoryId" class="form-select"
+                        onchange="this.form.submit()">
+
+                    <option value="">Tất cả danh mục</option>
+
+                    <option th:each="c : ${categories}"
+                            th:value="${c.id}"
+                            th:text="${c.name}"
+                            th:selected="${c.id == categoryId}">
+                    </option>
+
+                </select>
+
+            </form>
+        </div>
+
+
+        <div class="col-md-4">
+            <form th:action="@{/products}" method="get">
+
+                <select name="sort" class="form-select"
+                        onchange="this.form.submit()">
+
+                    <option value="">Sắp xếp giá</option>
+                    <option value="asc">Giá tăng dần</option>
+                    <option value="desc">Giá giảm dần</option>
+
+                </select>
+
+            </form>
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+    <table class="table table-bordered table-hover">
+
+        <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Tên</th>
+            <th>Giá</th>
+            <th>Hình</th>
+            <th>Danh mục</th>
+            <th width="230">Thao tác</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr th:each="product : ${listproduct}">
+
+            <td th:text="${product.id}"></td>
+
+            <td th:text="${product.name}"></td>
+
+            <td th:text="${product.price}"></td>
+
+            <td>
+                <img th:src="@{/images/{image}(image=${product.image})}"
+                     width="120">
+            </td>
+
+            <td th:text="${product.category?.name ?: 'N/A'}"></td>
+
+            <td>
+
+                <a th:href="@{/products/edit/{id}(id=${product.id})}"
+                   class="btn btn-warning btn-sm">
+                    Edit
+                </a>
+
+                <a th:href="@{/products/delete/{id}(id=${product.id})}"
+                   class="btn btn-danger btn-sm">
+                    Delete
+                </a>
+
+                <a th:href="@{/cart/add/{id}(id=${product.id})}"
+                   class="btn btn-success btn-sm">
+                    Add Cart
+                </a>
+
+            </td>
+
+        </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <!-- PAGINATION -->
+    <div class="d-flex justify-content-center">
+
+        <a th:if="${currentPage > 0}"
+           th:href="@{/products(page=${currentPage-1})}"
+           class="btn btn-outline-primary me-2">
+            Previous
+        </a>
+
+        <span class="align-self-center">
+            Page [[${currentPage+1}]] / [[${totalPages}]]
+        </span>
+
+        <a th:if="${currentPage+1 < totalPages}"
+           th:href="@{/products(page=${currentPage+1})}"
+           class="btn btn-outline-primary ms-2">
+            Next
+        </a>
+
+    </div>
+
+
+</div>
+
+</body>
+</html>

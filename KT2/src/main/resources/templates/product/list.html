@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách sản phẩm</title>
+</head>
+
+<body>
+
+<div layout:fragment="content">
+
+<form th:action="@{/products}" method="get" class="mb-4 d-flex gap-2">
+
+    <!-- giữ keyword từ navbar -->
+    <input type="hidden" name="keyword" th:value="${keyword}">
+
+    <!-- CATEGORY FILTER -->
+    <select name="categoryId" class="form-select w-auto">
+
+        <option value="">All Category</option>
+
+        <option th:each="c : ${categories}"
+                th:value="${c.id}"
+                th:text="${c.name}"
+                th:selected="${c.id == categoryId}">
+        </option>
+
+    </select>
+
+    <!-- SORT -->
+    <select name="sort" class="form-select w-auto">
+
+        <option value="">Sort Price</option>
+
+        <option value="asc"
+                th:selected="${sort == 'asc'}">
+            Giá tăng dần
+        </option>
+
+        <option value="desc"
+                th:selected="${sort == 'desc'}">
+            Giá giảm dần
+        </option>
+
+    </select>
+
+    <button class="btn btn-primary">
+        Apply
+    </button>
+
+</form>
+
+
+
+    <div class="row">
+
+        <div class="col-md-3 mb-4" th:each="product : ${products}">
+
+            <div class="card h-100 shadow-sm">
+
+                <!-- IMAGE -->
+                <img th:if="${product.image != null}"
+                     th:src="@{'/images/' + ${product.image}}"
+                     class="card-img-top"
+                     style="height:200px;object-fit:cover;" />
+
+                <!-- BODY -->
+                <div class="card-body d-flex flex-column">
+
+                    <h5 class="card-title" th:text="${product.name}"></h5>
+
+                    <p class="text-danger fw-bold"
+                       th:text="${product.price} + ' VND'"></p>
+
+                    <p class="text-muted"
+                       th:text="${product.category != null ? product.category.name : 'N/A'}"></p>
+
+                    <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post">
+
+                        <input type="hidden"
+                            th:name="${_csrf.parameterName}"
+                            th:value="${_csrf.token}" />
+
+                        <button class="btn btn-success w-100">
+                            🛒 Thêm vào giỏ
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="d-flex justify-content-center mt-4">
+
+        <a th:if="${currentPage > 0}"
+           th:href="@{/products(page=${currentPage-1},
+                     keyword=${keyword},
+                     categoryId=${categoryId},
+                     sort=${sort})}"
+           class="btn btn-outline-primary me-2">
+            Previous
+        </a>
+
+        <span class="align-self-center mx-2">
+            Page [[${currentPage + 1}]] / [[${totalPages}]]
+        </span>
+
+        <a th:if="${currentPage + 1 < totalPages}"
+           th:href="@{/products(page=${currentPage+1},
+                     keyword=${keyword},
+                     categoryId=${categoryId},
+                     sort=${sort})}"
+           class="btn btn-outline-primary ms-2">
+            Next
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+
